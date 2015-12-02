@@ -1,6 +1,6 @@
 # Yelp_Prediction
 
-Goal of this project is to implement Linear Regression and predict how a restaurant rating can effect, adding few more features to the restaurant.
+Goal of this project is to implement Linear Regression and predict how a restaurant rating can be effected by adding few more features to the restaurant.
 
 
 Data Set:
