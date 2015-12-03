@@ -83,11 +83,11 @@ def get_bussiness_features_by_id(business_id):
     return []
 
 def get_busness_features_list(row):
-    print 'get_busness_features_list'
+    #print 'get_busness_features_list'
     test_touple = []
     index = 0
     for field in row:
-        print test_touple
+        #print test_touple
         if index<27:
             if index == 1:
                 if field is None or field not in alcohol_mapping:
@@ -96,8 +96,8 @@ def get_busness_features_list(row):
                     test_touple.append(alcohol_mapping[field])
                     # print type(alcohol_mapping[field])
             elif index == 11:
-                print field
-                print attire_mapping
+                #print field
+                #print attire_mapping
                 # print attire_mapping[field]
                 if field is None or field not in attire_mapping:
                     test_touple.append(0)
@@ -119,10 +119,10 @@ def get_busness_features_list(row):
 def change_features(features, features_to_update):
 
     for feature in features_to_update:
-        print features_mapping[feature]
+       # print features_mapping[feature]
         if features_mapping[feature] == 1:
-            print features[features_mapping[feature]]
-            print alcohol_mapping[features_to_update[feature]]
+            #print features[features_mapping[feature]]
+            #print alcohol_mapping[features_to_update[feature]]
             features[features_mapping[feature]] = alcohol_mapping[features_to_update[feature]]
         elif features_mapping[feature] == 11:
             features[features_mapping[feature]] = attire_mapping[features_to_update[feature]]

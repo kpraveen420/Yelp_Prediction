@@ -37,6 +37,6 @@ def index(business_id, data, value):
     return prediction_algorithm.predict(algorithm, business_id, postdata)
 
 
-algorithm = prediction_algorithm.train()
+algorithm = prediction_algorithm.train_linear()
 
 run(host='localhost', port=9999)
