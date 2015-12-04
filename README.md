@@ -5,6 +5,7 @@ Goal of this project is to implement Linear Regression and predict how a restaur
 
 ### Data Set:
 Yelp data set can be downloaded from https://www.yelp.com/dataset_challenge/dataset.
+```Data set size is 3.2GB```
 
 
 ### Algorithms Used:
