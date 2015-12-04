@@ -8,10 +8,11 @@ Yelp data set can be downloaded from https://www.yelp.com/dataset_challenge/data
 
 
 ### Algorithms Used:
-0. Linear Regression:
+0. **Linear Regression**
 
 We started working with Linear Regression. But the results were not impressive. So decided to move with other algorithms.
 Results of the Linear Regression can be seen below
+```
 ('Coefficients: \n', array([-0.25635592,  0.05793933,  0.16467707,  0.18756422,  0.22711118,
         0.39648812,  0.27228609,  0.20640004, -0.16721703,  0.20535891,
         0.30502822,  0.0651468 ,  0.00639236,  0.0436703 ,  0.06147295,
@@ -20,5 +21,11 @@ Results of the Linear Regression can be seen below
         0.13131649, -0.02851442]))
 Residual sum of squares: 0.53
 Variance score: 0.06
+```
+
+1. **Support Vector Regression**
+
+
+
 
 
