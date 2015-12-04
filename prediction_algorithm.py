@@ -50,7 +50,7 @@ def predict( regr, business_id, features):
     print updated_features
     return {'new_rating': regr.predict(updated_features)[0]};
 
-def train_svm():
+def train_svm_poly():
     yelp_data = data_importer.get_yelp_data()
     test_data = np.array(yelp_data)
     # print test_data
