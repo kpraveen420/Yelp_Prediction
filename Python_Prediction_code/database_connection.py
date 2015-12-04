@@ -4,7 +4,7 @@ __author__ = 'praveenk'
 import MySQLdb
 
 def db_connection():
-    db = MySQLdb.connect(host="54.218.47.42", user="root", passwd="root", db="yelp")
+    db = MySQLdb.connect(host="54.218.47.42", user="user", passwd="password", db="yelp")
     return db
 
 def close_connection(connection):
