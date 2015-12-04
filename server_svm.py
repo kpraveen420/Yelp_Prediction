@@ -37,6 +37,8 @@ def index(business_id, data, value):
     return prediction_algorithm.predict(algorithm, business_id, postdata)
 
 
-algorithm = prediction_algorithm.train_svm()
+# algorithm = prediction_algorithm.train_svm()
+
+algorithm = prediction_algorithm.train_svm_rbf()
 
 run(host='localhost', port=9999)
