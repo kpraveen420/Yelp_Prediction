@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<head>
+<img src="/images/restaurant-red-beans-coffee.jpg" style='position:fixed;top:0px;left:0px;width:100%;height:100%;z-index:-1;'>
+	<style>
+		body {background-color:lightbrown}
+		h1   {color: #FFFF66}
+	</style>
+	<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>
+	<script src = "/javascript/jquery.js"></script>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+	<script src = "/javascript/chart.js"></script>
+
+</head>
+<body  ng-app="app" ng-controller="analysisController">
+<div id="header">
+		<h1 align = "center"> Restaurant Rating Analysis Graph </h1>
+</div>		
+<table align = "center" width="600" height= "300"  cellpadding="5"> 
+<tr>
+	<td align="center" valign="center">
+		<a href="#" ng-click = "homePage()" class="btn btn-info" role="button"><font color="#FFFF66" size = "5px"><b>Home</b></font></a>
+	<td align="center" valign="center">
+		<a href="#" ng-click = "analysisPage()" class="btn btn-info" role="button"><font color="#FFFF66" size = "5px"><b>Analysis</b></font></a>
+	<td align="center" valign="center">
+		<a href="#" ng-click = "predictionPage()" class="btn btn-info" role="button"><font color="#FFFF66" size = "5px"><b>Prediction</b></font></a>
+</tr>
+<tr>
+	<td  align="center" valign="center">
+		<select style = "width:300px" ng-model = "selectedState" ng-change="getCities()" ng-options =" state for state in statesList">
+		</select>
+		<FONT COLOR="#FFFF66" size="5px"> <b>Select State</b> </FONT> <br>
+	</td>
+	<td  align="center" valign="center">
+		<select style = "width:300px" ng-model = "selectedCity" ng-change="getRestaurants()" id = "city">
+		</select>
+		<FONT COLOR="#FFFF66" size="5px"><b> Select City</b> </FONT> <br>
+	</td>
+	<td  align="center" valign="center">
+		<select style = "width:300px" ng-model = "selectedRestaurant" ng-change="sendId()" id = "restaurant">
+		</select>
+		<FONT COLOR="#FFFF66" size="5px"><b> Select Restaurant</b> </FONT> <br>
+	</td>
+ </tr>
+</table>
+<div id="test">
+      <!-- <button type="button" id="myBtn" ng-click="send()">Display Graph</button> -->
+      <div id="container" style="min-width: 310px; height: 400px; margin: 0 auto" ng-show="graphdisplay"></div>
+
+  </div>
+</body>
+<script type="text/javascript">
+	var app = angular.module('app', []);
+	app.controller("analysisController", function($scope,$http)
+	{
+	var statesList = [];
+	$scope.statesList = statesList;
+	var restaurantList = [];
+	var j;
+	$scope.graphdisplay = false;
+	
+	$scope.send = function()
+	 {
+	 	$scope.graphdisplay = true;
+	    $scope.getavgrating(restaurants.restaurantName[j].ID);
+	 
+	 }; 
+	
+	$http({
+		     method: 'GET',
+		     url: '/getStates'
+		     }).success(function(res){
+		         console.log(res.status);
+				 if(res.status === 'Success'){
+			     	for(var i = 0; i < res.states.length; i++){
+			     		$scope.statesList.push(res.states[i]);
+			     	}
+			     	console.log($scope.statesList);
+			     } else {
+			     
+			     }
+			 }).error(function(error){
+			 console.log("error");
+			 alert("error");
+		  });
+	$scope.homePage = function()
+	           {
+	                console.log("home function");
+	           		$http({
+		            	method: 'GET',
+		            	url: '/home'
+		            	}).success(function(res){
+			            	if(res.status === 'Failed'){
+		                    	alert(res.error);
+		                	} else {
+		                    	console.log(res);
+		                    	window.location = '/';
+		                	}
+			            }).error(function(error){
+			                console.log("error");
+			          	    alert("error");
+		        	});
+	           };
+	 $scope.analysisPage = function()
+	           {
+	                console.log("home function");
+	           		$http({
+		            	method: 'GET',
+		            	url: '/analysis'
+		            	}).success(function(res){
+			            	if(res.status === 'Failed'){
+		                    	alert(res.error);
+		                	} else {
+		                    	console.log(res);
+		                    	window.location = '/analysis';
+		                	}
+			            }).error(function(error){
+			                console.log("error");
+			          	    alert("error");
+		        	});
+	           };    
+	 $scope.predictionPage = function()
+	           {
+	           		$http({
+		            	method: 'GET',
+		            	url: '/prediction'
+		            	}).success(function(res){
+			            	if(res.status === 'Failed'){
+		                    	alert(res.error);
+		                	} else {
+		                    	console.log(res);
+		                    	window.location = '/prediction';
+		                	}
+			            }).error(function(error){
+			                console.log("error");
+			          	    alert("error");
+		        	});
+	           };   
+	$scope.getCities = function()
+	 {
+	  console.log($scope.selectedState);
+	 $http({
+		     method: 'POST',
+		     url: '/getCities',
+		     data : {
+		     "selectedState" : $scope.selectedState
+		     }
+		     }).success(function(res){
+		         console.log(res.status);
+				 if(res.status === 'Success'){
+				 $( "#city" ).empty();
+				 // res.cities.splice(0,0," ")
+			     	for(var i = 0; i < res.cities.length; i++){
+			     		
+			     		$("#city").append("<option>"+res.cities[i]+"</option>"); 
+			     	}
+			     	
+			     } else {
+			     			     
+			     }
+			 }).error(function(error){
+			 console.log("error");
+			 alert("error");
+		  });
+	  };
+	$scope.getRestaurants = function()
+	 {
+	 $http({
+		     method: 'POST',
+		     url: '/getRestaurants',
+		     data : {
+		     "selectedState" : $scope.selectedState,
+		     "selectedCity" : $scope.selectedCity
+		     }
+		     }).success(function(res){
+		         console.log(res.status);
+		         restaurants = res;
+				 if(res.status === 'Success'){
+				   $( "#restaurant" ).empty();
+				    // res.restaurantName.splice(0,0,{name: " "})
+			     	for(var i = 0; i < res.restaurantName.length; i++){
+			     		restaurantList.push(res.restaurantName[i]);
+			     		$("#restaurant").append("<option>"+res.restaurantName[i].name+"</option>"); 
+			     		$scope.graphdisplay = false;
+			     	}
+	
+			     } else {
+			     
+			     }
+			 }).error(function(error){
+			 console.log("error");
+			 alert("error");
+		  });  
+		};  
+		        
+	$scope.sendId = function()
+		{
+		   console.log("select ol"+$scope.selectedRestaurant);
+		   var selectres = $scope.selectedRestaurant;
+		   console.log("data"+ restaurants);  
+		   for(var i=0;i<restaurants.restaurantName.length;i++)
+		   {
+		      if(selectres == restaurants.restaurantName[i].name)
+		      {
+		      j=i;
+		      }		      
+		   }
+		   $scope.graphdisplay = false;
+		   console.log(" j is:"+ j);
+		   $scope.send();
+		   
+		}; 
+		   		
+	$scope.getavgrating = function(ID)
+	 {
+	 $http({
+	     method: 'POST',
+	     url: '/getAvgRatingPerDay',
+	     data : {
+	     "restaurant_business_id" : ID
+	     }
+	     }).success(function(res){
+	         console.log(res.status);
+			 if(res.status === 'Success'){
+		     	console.log(res.graph);
+		     	test(res.graph);
+		     } else {
+		        
+		     }
+		 }).error(function(error){
+		 console.log("error");
+		 alert("error");
+	  }); 
+		};                         	        
+	});
+</script>
+</html>
+	

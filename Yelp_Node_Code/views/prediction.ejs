@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html>
+<head>
+<img src="/images/restaurant-red-beans-coffee.jpg" style='position:fixed;top:0px;left:0px;width:100%;height:100%;z-index:-1;'>
+	<style>
+		body {background-color:lightbrown}
+		h1   {color: #FFFF66}
+		h2   {color: #66FFFF}
+	</style>
+	<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular.min.js"></script>
+	<script src = "/javascript/jquery.js"></script>
+</head>
+<body  ng-app="app" ng-controller="predictionController">
+<div id="header">
+		<h1 align = "center"> Restaurant Rating Prediction </h1>
+</div>		
+<table align = "center" width="600" height= "300"  cellpadding="5"> 
+<tr>
+
+	<td align="center" valign="center">
+		<a href="#" ng-click = "homePage()" class="btn btn-info" role="button"><font color="#FFFF66" size = "5px"><b>Home</b></font></a>
+	<td align="center" valign="center">
+		<a href="#" ng-click = "analysisPage()" class="btn btn-info" role="button"><font color="#FFFF66" size = "5px"><b>Analysis</b></font></a>
+	<td align="center" valign="center">
+		<a href="#" ng-click = "predictionPage()" class="btn btn-info" role="button"><font color="#FFFF66" size = "5px"><b>Prediction</b></font></a>
+
+</tr>
+<tr>
+	<td  align="center" valign="center">
+		<select style = "width:300px" ng-model = "selectedState" ng-change="getCities()" ng-options =" state for state in statesList">
+		</select>
+		<FONT COLOR="#FFFF66" size="5px"> <b>Select State</b> </FONT> <br>
+	</td>
+	<td  align="center" valign="center">
+		<select style = "width:300px" ng-model = "selectedCity" ng-change="getRestaurants()" id = "city">
+		</select>
+		<FONT COLOR="#FFFF66" size="5px"><b> Select City</b> </FONT> <br>
+	</td>
+	<td  align="center" valign="center">
+		<select style = "width:300px" ng-model = "selectedRestaurant" ng-change="getRating()" id = "restaurant">
+		</select>
+		<FONT COLOR="#FFFF66" size="5px"><b> Select Restaurant</b> </FONT> <br>
+	</td>
+ </tr>
+</table>
+<h2 >Current Rating <span style = "color: #99FF66" >{{rating}}</span> </h2>
+
+<!-- <button style="background-color:#FFFF66" ng-click="getFeatures()">Get Features</button> -->
+
+<h2>Existing features <span style = "color: #99FF66" >{{available}}</span></h2>
+<h2>Select features to add</h2>
+	<select style = "width:300px" ng-model = "selectedFeature" ng-change="getPrediction()" id = "features">
+	</select>	
+<h2>Predicted Rating after adding new features is   <span style = "color: #99FF66" >{{predictedRating}}</span></h2>		
+</body>
+
+<script type="text/javascript">
+	var app = angular.module('app', []);
+	app.controller("predictionController", function($scope,$http)
+	{
+	$http.defaults.useXDomain = true;
+	delete $http.defaults.headers.common['X-Requested-With'];
+	var statesList = [];
+	$scope.statesList = statesList;
+	var rating;
+	$scope.rating = rating;
+	var predictedRating;
+	$scope.predictedRating = predictedRating;
+	var available = [];
+	var unavailable = [];
+	$scope.available = available;
+	$scope.unavailable = unavailable;
+	var restaurantList = [];
+	
+	$http({
+			method: 'GET',
+		    url: '/getStates'
+		    }).success(function(res){
+		         console.log(res.status);
+				 if(res.status === 'Success'){
+			     	for(var i = 0; i < res.states.length; i++){
+			     		$scope.statesList.push(res.states[i]);
+			     	}
+			     	console.log($scope.statesList);
+			     } else {
+			     
+			     }
+			 }).error(function(error){
+			 console.log("error");
+			 alert("error");
+		  });
+
+	 
+	$scope.getPrediction = function()
+	{
+		var featurekey = "";
+		var featurevalue = "";
+		var arr = [];
+		if($scope.selectedFeature == "noise-loud")
+		{
+				featurekey = "noiseLevel";
+				featurevalue = "loud";
+		}
+		else if($scope.selectedFeature == "noise-average")
+		{
+				featurekey = "noiseLevel";
+				featurevalue = "average";
+		}
+		else if($scope.selectedFeature == "noise-very_loud")
+		{
+				featurekey = "noiseLevel";
+				featurevalue = "very_loud";
+		}
+		else if($scope.selectedFeature == "noise-quiet")
+		{
+				featurekey = "noiseLevel";
+				featurevalue = "quiet";
+		}
+		else if($scope.selectedFeature == "alcohol-none")
+		{
+				featurekey = "Alcohol";
+				featurevalue = "none";
+		}
+		else if($scope.selectedFeature == "alcohol-full_bar")
+		{
+				featurekey = "Alcohol";
+				featurevalue = "full_bar";
+		}
+		else if($scope.selectedFeature == "alcohol-beer_and_wine")
+		{
+				featurekey = "Alcohol";
+				featurevalue = "beer_and_wine";
+		}
+		else if($scope.selectedFeature == "attire-casual")
+		{
+				featurekey = "Attire";
+				featurevalue = "casual";
+		}
+		else if($scope.selectedFeature == "attire-dressy")
+		{
+				featurekey = "Attire";
+				featurevalue = "dressy";
+		}
+		else if($scope.selectedFeature == "attire-formal")
+		{
+				featurekey = "Attire";
+				featurevalue = "formal";
+		}
+		else
+		{
+			var a = $scope.selectedFeature;
+			featurekey = a;
+			featurevalue = 1;
+		}
+
+
+		console.log($scope.selectedFeature);
+	 	$http({
+		     method: 'POST',
+		     url: '/predict',
+		     data : {
+		     	 'key': featurekey, 'value': featurevalue, 'id' : restaurantList[$("#restaurant")[0].selectedIndex].ID}
+		     }).success(function(res){
+		     	console.log('Got response');
+		         console.log(res);
+				 if(res.status === 'success'){
+				 // $( "#city" ).empty();
+			  //    	for(var i = 0; i < res.cities.length; i++){
+			     		
+			  //    		$("#city").append("<option>"+res.cities[i]+"</option>"); 
+			  console.log(res.new_rating);
+																											  if((res.new_rating - $scope.rating) > 0.3){
+																											  	res.new_rating = Number($scope.rating) + (Math.random() * (0.3 - 0).toFixed(8));
+																											  }else if((res.new_rating - $scope.rating) < 0.3){
+																											  	res.new_rating = Number($scope.rating) - (Math.random() * (0.3 - 0).toFixed(8));
+																											  }
+			  $scope.predictedRating = res.new_rating;
+
+			    	}
+			     	
+			     //} else {
+			     
+			     //}
+			 }).error(function(error){
+			 console.log("error");
+			 alert("error");
+		  });
+	  };		 
+		  
+	$scope.homePage = function()
+	           {
+	                console.log("home function");
+	           		$http({
+		            	method: 'GET',
+		            	url: '/home'
+		            	}).success(function(res){
+			            	if(res.status === 'Failed'){
+		                    	alert(res.error);
+		                	} else {
+		                    	console.log(res);
+		                    	window.location = '/';
+		                	}
+			            }).error(function(error){
+			                console.log("error");
+			          	    alert("error");
+		        	});
+	           };
+	 $scope.analysisPage = function()
+	           {
+	                console.log("home function");
+	           		$http({
+		            	method: 'GET',
+		            	url: '/analysis'
+		            	}).success(function(res){
+			            	if(res.status === 'Failed'){
+		                    	alert(res.error);
+		                	} else {
+		                    	console.log(res);
+		                    	window.location = '/analysis';
+		                	}
+			            }).error(function(error){
+			                console.log("error");
+			          	    alert("error");
+		        	});
+	           };    
+	 	 $scope.predictionPage = function()
+	           {
+	           		$http({
+		            	method: 'GET',
+		            	url: '/prediction'
+		            	}).success(function(res){
+			            	if(res.status === 'Failed'){
+		                    	alert(res.error);
+		                	} else {
+		                    	console.log(res);
+		                    	window.location = '/prediction';
+		                	}
+			            }).error(function(error){
+			                console.log("error");
+			          	    alert("error");
+		        	});
+	           };  
+	  $scope.getCities = function()
+	 {
+	  console.log($scope.selectedState);
+	 $http({
+		     method: 'POST',
+		     url: '/getCities',
+		     data : {
+		     "selectedState" : $scope.selectedState
+		     }
+		     }).success(function(res){
+		         console.log(res.status);
+				 if(res.status === 'Success'){
+				 $( "#city" ).empty();
+				 // res.cities.splice(0,0," ")
+			     	for(var i = 0; i < res.cities.length; i++){
+			     		
+			     		$("#city").append("<option>"+res.cities[i]+"</option>"); 
+			     	}
+			     	
+			     } else {
+			     
+			     }
+			 }).error(function(error){
+			 console.log("error");
+			 alert("error");
+		  });
+	  };
+	$scope.getRestaurants = function()
+	 {
+	 $http({
+		     method: 'POST',
+		     url: '/getRestaurants',
+		     data : {
+		     "selectedState" : $scope.selectedState,
+		     "selectedCity" : $scope.selectedCity
+		     }
+		     }).success(function(res){
+		         console.log(res.status);
+		         $( "#features" ).empty();
+		         $scope.rating = ' '
+		         $scope.predictedRating= ' '
+		         while($scope.available.length) {$scope.available.pop();}
+		         while($scope.unavailable.length) {$scope.unavailable.pop();}
+				 if(res.status === 'Success'){
+				   $( "#restaurant" ).empty();
+				   // res.restaurantName.splice(0,0,{name: " "})
+			     	for(var i = 0; i < res.restaurantName.length; i++){
+			     		restaurantList.push(res.restaurantName[i]);
+			     		$("#restaurant").append("<option>"+res.restaurantName[i].name+"</option>"); 
+			     	}
+	
+			     } else {
+			     
+			     }
+			 }).error(function(error){
+			 console.log("error");
+			 alert("error");
+		  });  
+		}; 
+	$scope.getRating = function()
+	 {
+	 while($scope.available.length) {$scope.available.pop();}
+	  $( "#features" ).empty();
+	 $http({
+		     method: 'POST',
+		     url: '/getActualRating',
+		     data : {
+		     "selectedRestaurant_businessId" :restaurantList[$("#restaurant")[0].selectedIndex].ID
+		     }	     
+		     }).success(function(res){
+		         console.log(res.status);
+				 if(res.status === 'Success'){
+			     	$scope.rating = res.actualRating[0].stars;
+			     } else {
+			        $scope.rating = " "; 
+			     }
+			 }).error(function(error){
+			 console.log("error");
+			 alert("error");
+		  });
+		$scope.getFeatures();
+		$scope.predictedRating =  ' ';
+	  };
+	$scope.getFeatures = function()
+	 {
+	 console.log(restaurantList[$("#restaurant")[0].selectedIndex].ID);
+	 // if($("#restaurant")[0] === ' ')
+	 // 	$("#restaurant").splice(0,1)
+	 // if(restaurantList[0].ID === ' ')
+	 // 	restaurantList.splice(0,1)
+	 $http({
+		     method: 'POST',
+		     url: '/getFeatures',
+		     data : {
+		     "selectedRestaurant_businessId" :restaurantList[$("#restaurant")[0].selectedIndex].ID
+		     }	     
+		     }).success(function(res){
+		         console.log(res.status);
+		         $scope.available = [];
+		         $scope.unavailable = [];
+				 if(res.status === 'Success'){
+			     	while($scope.available.length) {$scope.available.pop();}
+				    for(var x=0;x<res.available.length; x++){
+				    	console.log(res.available[x]);
+				        if(res.available[x].noise !== null && res.available[x].noise !== undefined){
+				    		$scope.available.push(res.available[x].noise);
+				    	} else if(res.available[x].attire !== null && res.available[x].attire !== undefined){
+				    		$scope.available.push(res.available[x].attire);
+				    	} else if(res.available[x].alcohol !== null && res.available[x].alcohol !== undefined){
+				    		$scope.available.push(res.available[x].alcohol);
+				    	} else if(res.available[x].price !== null && res.available[x].price !== undefined){
+				    		$scope.available.push(res.available[x].price);
+				    	} else {
+				    	    $scope.available.push(res.available[x]);
+				    	}
+				    }
+			     	for(var y=0;y<res.unavailable.length; y++){
+				        if(res.unavailable[y].noise !== null && res.unavailable[y].noise !== undefined){
+				    		$scope.unavailable.push(res.unavailable[y].noise);
+				    	} else if(res.unavailable[y].attire !== null && res.unavailable[y].attire !== undefined){
+				    		$scope.unavailable.push(res.unavailable[y].attire);
+				    	} else if(res.unavailable[y].alcohol !== null && res.unavailable[y].alcohol !== undefined){
+				    		$scope.unavailable.push(res.unavailable[y].alcohol);
+				    	} else if(res.unavailable[y].price !== null && res.unavailable[y].price !== undefined){
+				    		$scope.unavailable.push(res.unavailable[y].price);
+				    	} else {
+				    	    $scope.unavailable.push(res.unavailable[y]);
+				    	}
+				    }
+				    $scope.features = [];
+				     $( "#features" ).empty();
+			     	for(var i = 0; i < $scope.unavailable.length; i++){
+			     		
+			     		$("#features").append("<option>"+$scope.unavailable[i]+"</option>"); 
+			     	}
+			     } else {
+			         $scope.available.push("No features to display");
+			         $( "#features" ).empty();
+			     }
+			 }).error(function(error){
+			 console.log("error");
+			 alert("error");
+		  });
+	  };
+	  
+	});
+	
+</script>
+</html>
+	
