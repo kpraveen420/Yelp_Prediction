@@ -8,7 +8,7 @@ Yelp data set can be downloaded from https://www.yelp.com/dataset_challenge/data
 
 
 ### Algorithms Used:
-0. **Linear Regression**
+**1. Linear Regression**
 
 We started working with Linear Regression. But the results were not impressive. So decided to move with other algorithms.
 Results of the Linear Regression can be seen below
@@ -23,8 +23,9 @@ Residual sum of squares: 0.53
 Variance score: 0.06
 ```
 
-1. **Support Vector Regression**
+**2. Support Vector Regression**
 
+We implemented Support Vector Regression with kernel function as ``` polynomial``` and ```RBF ``` to explore how those works. For this application, we found that RBF is giving better performance compared to other regression algorithms.
 
 
 
